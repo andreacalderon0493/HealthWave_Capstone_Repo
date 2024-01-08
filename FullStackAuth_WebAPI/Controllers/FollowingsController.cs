@@ -107,77 +107,70 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        //// POST api/cars
-        //[HttpPost, Authorize]
-        //public IActionResult Post([FromBody] Car data)
-        //{
-        //    try
-        //    {
-        //        // Retrieve the authenticated user's ID from the JWT token
-        //        string userId = User.FindFirstValue("id");
+        // POST api/cars
+        [HttpPost("{acceptingId}"), Authorize]
+        public IActionResult Post(string acceptingId)
+        {
+            Followings request = new Followings();
+            try
+            {
+                // Retrieve the authenticated user's ID from the JWT token
+                string userId = User.FindFirstValue("id");
 
-        //        // If the user ID is null or empty, the user is not authenticated, so return a 401 unauthorized response
-        //        if (string.IsNullOrEmpty(userId))
-        //        {
-        //            return Unauthorized();
-        //        }
+                // If the user ID is null or empty, the user is not authenticated, so return a 401 unauthorized response
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized();
+                }
+                request.Status = "Following";
+                request.FollowerId = userId;
+                request.FollowingId = acceptingId;
+                _context.Add(request);
+                _context.SaveChanges();
+                
+                return StatusCode(201, request);
+            }
+            catch (Exception ex)
+            {
+                // If an error occurs, return a 500 internal server error with the error message
+                return StatusCode(500, ex.Message);
+            }
+        }
 
-        //        // Set the car's owner ID  the authenticated user's ID we found earlier
-        //        data.OwnerId = userId;
+        //DELETE api/cars/5
+        [HttpDelete("{id}"), Authorize]
+        public IActionResult Delete(int id)
+        {
+            try
+            {
+                // Find the car to be deleted
+                Followings followings = _context.Followings.FirstOrDefault(f => f.Id == id);
+                if (followings == null)
+                {
+                    // Return a 404 Not Found error if the following with the specified ID does not exist
+                    return NotFound();
+                }
 
-        //        // Add the car to the database and save changes
-        //        _context.Cars.Add(data);
-        //        if (!ModelState.IsValid)
-        //        {
-        //            // If the car model state is invalid, return a 400 bad request response with the model state errors
-        //            return BadRequest(ModelState);
-        //        }
-        //        _context.SaveChanges();
+                // Check if the authenticated user is the owner of the following
+                var userId = User.FindFirstValue("id");
+                if (string.IsNullOrEmpty(userId) || followings.FollowingId != userId)
+                {
+                    // Return a 401 Unauthorized error if the authenticated user is not the owner of the car
+                    return Unauthorized();
+                }
 
-        //        // Return the newly created car as a 201 created response
-        //        return StatusCode(201, data);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // If an error occurs, return a 500 internal server error with the error message
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
+                // Remove the car from the database
+                _context.Followings.Remove(followings);
+                _context.SaveChanges();
 
-        // DELETE api/cars/5
-        //[HttpDelete("{id}"), Authorize]
-        //public IActionResult Delete(int id)
-        //{
-        //    try
-        //    {
-        //        // Find the car to be deleted
-        //        Followings followings = _context.Followings.FirstOrDefault(c => c.Id == id);
-        //        if (car == null)
-        //        {
-        //            // Return a 404 Not Found error if the car with the specified ID does not exist
-        //            return NotFound();
-        //        }
-
-        //        // Check if the authenticated user is the owner of the car
-        //        var userId = User.FindFirstValue("id");
-        //        if (string.IsNullOrEmpty(userId) || car.OwnerId != userId)
-        //        {
-        //            // Return a 401 Unauthorized error if the authenticated user is not the owner of the car
-        //            return Unauthorized();
-        //        }
-
-        //        // Remove the car from the database
-        //        _context.Cars.Remove(car);
-        //        _context.SaveChanges();
-
-        //        // Return a 204 No Content status code
-        //        return StatusCode(204);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Return a 500 Internal Server Error with the error message if an exception occurs
-        //        return StatusCode(500, ex.Message);
-        //    }
-        //}
+                // Return a 204 No Content status code
+                return StatusCode(204);
+            }
+            catch (Exception ex)
+            {
+                // Return a 500 Internal Server Error with the error message if an exception occurs
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 }
