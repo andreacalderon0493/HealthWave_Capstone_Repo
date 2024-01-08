@@ -24,40 +24,6 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
-        // GET: api/cars
-        [HttpGet]
-        public IActionResult GetAllCars()
-        {
-            try
-            {
-                //Includes entire Owner object--insecure!
-                //var cars = _context.Cars.Include(c => c.Owner).ToList();
-
-                //Retrieve all cars from the database, using Dtos
-                var cars = _context.Cars.Select(c => new CarWithUserDto
-                {
-                    Id = c.Id,
-                    Make = c.Make,
-                    Model = c.Model,
-                    Year = c.Year,
-                    Owner = new UserForDisplayDto
-                    {
-                        Id = c.Owner.Id,
-                        FirstName = c.Owner.FirstName,
-                        LastName = c.Owner.LastName,
-                        UserName = c.Owner.UserName,
-                    }
-                }).ToList();
-
-                // Return the list of cars as a 200 OK response
-                return StatusCode(200, cars);
-            }
-            catch (Exception ex)
-            {
-                // If an error occurs, return a 500 internal server error with the error message
-                return StatusCode(500, ex.Message);
-            }
-        }
 
         // GET: api/followings/myFollowings
         [HttpGet("myFollowings"), Authorize]
@@ -69,9 +35,17 @@ namespace FullStackAuth_WebAPI.Controllers
                 // Retrieve the authenticated user's ID from the JWT token
                 string userId = User.FindFirstValue("id");
 
-    
+
                 // Retrieve all followings that belong to the authenticated user, including the owner object
-                var followings = _context.Followings.Where(f => f.FollowerId == userId).ToList();
+                var followings = _context.Followings.Where(f => f.FollowerId == userId)
+                    .Select(f => new UserForDisplayDto()
+                    {
+                        Id = f.Following.Id,
+                        UserName = f.Following.UserName,
+                        FirstName = f.Following.FirstName,
+                        LastName = f.Following.LastName
+                    })
+                    .ToList();
 
                 // Return the list of followings as a 200 OK response
                 return StatusCode(200, followings);
@@ -85,21 +59,23 @@ namespace FullStackAuth_WebAPI.Controllers
 
         // GET api/followings/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public IActionResult Get(string id)
         {
             try
             {
+
                 // Retrieve the following with the specified ID, including the owner object
-                var following = _context.Followings.Include(f => f.FollowerId).FirstOrDefault(c => c.Id == id);
+                var user = _context.Users.FirstOrDefault(u => u.Id == id);
+                //var following = _context.Followings.Include(f => f.FollowerId).FirstOrDefault(c => c.Id == id);
 
                 // If the following does not exist, return a 404 not found response
-                if (following == null)
+                if (user == null)
                 {
                     return NotFound();
                 }
 
                 // Return the following as a 200 OK response
-                return StatusCode(200, following);
+                return StatusCode(200, user);
             }
             catch (Exception ex)
             {
@@ -138,7 +114,7 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        //DELETE api/cars/5
+        //DELETE api/followings/5
         [HttpDelete("{id}"), Authorize]
         public IActionResult Delete(int id)
         {
