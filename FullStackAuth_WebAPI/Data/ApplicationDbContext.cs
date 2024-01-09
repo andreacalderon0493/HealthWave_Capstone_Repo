@@ -9,6 +9,10 @@ namespace FullStackAuth_WebAPI.Data
     {
         public DbSet<Car> Cars { get; set; }
         public DbSet<Followings> Followings { get; set;}
+        public DbSet<Messages> Messages { get; set; }
+        public DbSet<Comments> Comments { get; set; }
+        public DbSet<Favorites> Favorites { get; set; }
+        public DbSet<Post> Post { get; set; }
 
         public ApplicationDbContext(DbContextOptions options)
     : base(options)

@@ -194,6 +194,57 @@ namespace FullStackAuth_WebAPI.Migrations
                 .Annotation("MySQL:Charset", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Comments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Text = table.Column<string>(type: "longtext", nullable: true),
+                    PostId = table.Column<string>(type: "varchar(255)", nullable: true),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_AspNetUsers_PostId",
+                        column: x => x.PostId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Comments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Favorites",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    PostId = table.Column<string>(type: "varchar(255)", nullable: true),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Favorites", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Favorites_AspNetUsers_PostId",
+                        column: x => x.PostId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Favorites_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Followings",
                 columns: table => new
                 {
@@ -219,13 +270,62 @@ namespace FullStackAuth_WebAPI.Migrations
                 })
                 .Annotation("MySQL:Charset", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "Messages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Text = table.Column<string>(type: "longtext", nullable: true),
+                    Time = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    SenderId = table.Column<string>(type: "varchar(255)", nullable: true),
+                    ReceiverId = table.Column<string>(type: "varchar(255)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Messages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Post",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Share = table.Column<string>(type: "longtext", nullable: true),
+                    Follow = table.Column<string>(type: "longtext", nullable: true),
+                    Text = table.Column<string>(type: "longtext", nullable: true),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Post", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Post_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                })
+                .Annotation("MySQL:Charset", "utf8mb4");
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "216021fc-1841-49f6-87f2-5b973ffcbe1d", null, "User", "USER" },
-                    { "833043ab-0f03-49f9-9efb-072601f250fd", null, "Admin", "ADMIN" }
+                    { "75117df9-9d80-476e-82a9-a420b1cbb2fa", null, "Admin", "ADMIN" },
+                    { "8dcabb05-7c78-4570-9c20-7836fdcaaf51", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -271,6 +371,26 @@ namespace FullStackAuth_WebAPI.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comments_PostId",
+                table: "Comments",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_PostId",
+                table: "Favorites",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_UserId",
+                table: "Favorites",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Followings_FollowerId",
                 table: "Followings",
                 column: "FollowerId");
@@ -279,6 +399,21 @@ namespace FullStackAuth_WebAPI.Migrations
                 name: "IX_Followings_FollowingId",
                 table: "Followings",
                 column: "FollowingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_ReceiverId",
+                table: "Messages",
+                column: "ReceiverId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_SenderId",
+                table: "Messages",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Post_UserId",
+                table: "Post",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -303,7 +438,19 @@ namespace FullStackAuth_WebAPI.Migrations
                 name: "Cars");
 
             migrationBuilder.DropTable(
+                name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "Favorites");
+
+            migrationBuilder.DropTable(
                 name: "Followings");
+
+            migrationBuilder.DropTable(
+                name: "Messages");
+
+            migrationBuilder.DropTable(
+                name: "Post");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

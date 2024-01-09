@@ -11,7 +11,7 @@ namespace FullStackAuth_WebAPI.Models
 		public string Text { get; set; }
 
         [ForeignKey("Post")]
-        public int PostId { get; set; }
+        public string PostId { get; set; }
 		public User Post { get; set; }
 
 		[ForeignKey("User")]
