@@ -37,18 +37,22 @@ namespace FullStackAuth_WebAPI.Controllers
 
 
                 // Retrieve all followings that belong to the authenticated user, including the owner object
-                var messages = _context.Messages.Where(m => m.ReceiverId == userId)
-                    .Select(m => new UserForDisplayDto()
+                var userMessages = _context.Messages
+                    .Where(m => m.ReceiverId == userId || m.SenderId == userId)
+                    .Select(m => new DirectMessagesDto()
                     {
-                        //Id = m.Message.Id,
-                        //UserName = m.Message.UserName,
-                        //FirstName = m.Message.FirstName,
-                        //LastName = m.Message.LastName
+                        Id = m.Id.ToString(),
+                        UserName = m.Sender.UserName,
+                        FirstName = m.Sender.FirstName,
+                        LastName = m.Sender.LastName,
+                        Text = m.Text,
+                        Time = m.Time
+
                     })
                     .ToList();
 
                 // Return the list of followings as a 200 OK response
-                return StatusCode(200, messages);
+                return StatusCode(200, userMessages);
             }
             catch (Exception ex)
             {
@@ -58,8 +62,8 @@ namespace FullStackAuth_WebAPI.Controllers
         }
 
         // POST api/messages/{id}
-        [HttpPost("{acceptingId}"), Authorize]
-        public IActionResult Post([FromBody]Messages messages ,string acceptingId)
+        [HttpPost("{recievingId}"), Authorize]
+        public IActionResult Post([FromBody]Messages messages ,string recievingId)
         {
       
             try
@@ -74,7 +78,7 @@ namespace FullStackAuth_WebAPI.Controllers
                 }
                 
                 messages.SenderId = userId;
-                messages.ReceiverId = acceptingId;
+                messages.ReceiverId = recievingId;
                 messages.Time = DateTime.Now;
                 _context.Add(messages);
                 _context.SaveChanges();
