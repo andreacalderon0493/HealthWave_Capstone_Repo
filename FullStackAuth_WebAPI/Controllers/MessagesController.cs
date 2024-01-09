@@ -59,9 +59,9 @@ namespace FullStackAuth_WebAPI.Controllers
 
         // POST api/messages/{id}
         [HttpPost("{acceptingId}"), Authorize]
-        public IActionResult Post(string acceptingId)
+        public IActionResult Post([FromBody]Messages messages ,string acceptingId)
         {
-            Messages message = new Messages();
+      
             try
             {
                 // Retrieve the authenticated user's ID from the JWT token
@@ -72,14 +72,14 @@ namespace FullStackAuth_WebAPI.Controllers
                 {
                     return Unauthorized();
                 }
-                message.Text = "";
-                message.SenderId = userId;
-                message.ReceiverId = acceptingId;
-                message.Time = DateTime.Now;
-                _context.Add(message);
+                
+                messages.SenderId = userId;
+                messages.ReceiverId = acceptingId;
+                messages.Time = DateTime.Now;
+                _context.Add(messages);
                 _context.SaveChanges();
 
-                return StatusCode(201, message);
+                return StatusCode(201, messages);
             }
             catch (Exception ex)
             {
