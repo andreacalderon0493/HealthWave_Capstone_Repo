@@ -61,9 +61,14 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
+        //query to find all messages where logged in user is sender or receiver
+        //Create a list of all userIds that appear
+        //Take out current user's id, leaving list of other users that have DMed
+        //Query separately to find all DMs with each individual user
+
         // POST api/messages/{id}
         [HttpPost("{recievingId}"), Authorize]
-        public IActionResult Post([FromBody]Messages messages ,string recievingId)
+        public IActionResult Post([FromBody]Message message ,string recievingId)
         {
       
             try
@@ -77,13 +82,13 @@ namespace FullStackAuth_WebAPI.Controllers
                     return Unauthorized();
                 }
                 
-                messages.SenderId = userId;
-                messages.ReceiverId = recievingId;
-                messages.Time = DateTime.Now;
-                _context.Add(messages);
+                message.SenderId = userId;
+                message.ReceiverId = recievingId;
+                message.Time = DateTime.Now;
+                _context.Add(message);
                 _context.SaveChanges();
 
-                return StatusCode(201, messages);
+                return StatusCode(201, message);
             }
             catch (Exception ex)
             {

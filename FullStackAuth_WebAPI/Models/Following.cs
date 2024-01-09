@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FullStackAuth_WebAPI.Models
 {
-	public class Followings
+	public class Following
 	{
         [Key]
 
@@ -14,12 +14,12 @@ namespace FullStackAuth_WebAPI.Models
         [ForeignKey("Follower")]
 
         public string FollowerId { get; set; }
-        public User Follower { get; set; }
+        public User UserIsFollower { get; set; }
 
         [ForeignKey("Following")]
 
         public string FollowingId { get; set; }
-        public User Following { get; set; }
+        public User UserIsFollowing { get; set; }
 
 
     }

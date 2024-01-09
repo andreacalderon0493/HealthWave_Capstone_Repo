@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FullStackAuth_WebAPI.Models
 {
-	public class Messages
+	public class Message
 	{
         [Key]
         public int Id { get; set; }

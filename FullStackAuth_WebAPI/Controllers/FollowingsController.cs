@@ -37,18 +37,18 @@ namespace FullStackAuth_WebAPI.Controllers
 
 
                 // Retrieve all followings that belong to the authenticated user, including the owner object
-                var followings = _context.Followings.Where(f => f.FollowerId == userId)
+                var following = _context.Followings.Where(f => f.FollowerId == userId)
                     .Select(f => new UserForDisplayDto()
                     {
-                        Id = f.Following.Id,
-                        UserName = f.Following.UserName,
-                        FirstName = f.Following.FirstName,
-                        LastName = f.Following.LastName
+                        Id = f.Id.ToString(),
+                        UserName = f.UserIsFollowing.UserName,
+                        FirstName = f.UserIsFollowing.FirstName,
+                        LastName = f.UserIsFollowing.LastName
                     })
                     .ToList();
 
                 // Return the list of followings as a 200 OK response
-                return StatusCode(200, followings);
+                return StatusCode(200, following);
             } 
             catch (Exception ex)
             {
@@ -88,7 +88,7 @@ namespace FullStackAuth_WebAPI.Controllers
         [HttpPost("{acceptingId}"), Authorize]
         public IActionResult Post(string acceptingId)
         {
-            Followings request = new Followings();
+            Following request = new Following();
             try
             {
                 // Retrieve the authenticated user's ID from the JWT token
@@ -121,7 +121,7 @@ namespace FullStackAuth_WebAPI.Controllers
             try
             {
                 // Find the car to be deleted
-                Followings followings = _context.Followings.FirstOrDefault(f => f.Id == id);
+                Following followings = _context.Followings.FirstOrDefault(f => f.Id == id);
                 if (followings == null)
                 {
                     // Return a 404 Not Found error if the following with the specified ID does not exist

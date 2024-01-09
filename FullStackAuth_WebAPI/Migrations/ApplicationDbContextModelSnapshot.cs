@@ -46,14 +46,14 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.ToTable("Cars");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Comments", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("PostId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("longtext");
@@ -70,14 +70,14 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Favorites", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Favorite", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("PostId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(255)");
@@ -91,31 +91,37 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.ToTable("Favorites");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Followings", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Following", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<string>("FollowerId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("FollowingId")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("UserIsFollowerId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("UserIsFollowingId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("FollowerId");
+                    b.HasIndex("UserIsFollowerId");
 
-                    b.HasIndex("FollowingId");
+                    b.HasIndex("UserIsFollowingId");
 
                     b.ToTable("Followings");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Messages", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Message", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -148,12 +154,6 @@ namespace FullStackAuth_WebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Follow")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Share")
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Text")
                         .HasColumnType("longtext");
 
@@ -164,7 +164,28 @@ namespace FullStackAuth_WebAPI.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Post");
+                    b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.SharedPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SharedPosts");
                 });
 
             modelBuilder.Entity("FullStackAuth_WebAPI.Models.User", b =>
@@ -265,13 +286,13 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "8dcabb05-7c78-4570-9c20-7836fdcaaf51",
+                            Id = "64c6069c-da4b-4501-a26f-e779438ee1ad",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "75117df9-9d80-476e-82a9-a420b1cbb2fa",
+                            Id = "1056946b-b397-42b2-9cb6-f7f0427d8920",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -388,11 +409,13 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Comments", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Comment", b =>
                 {
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "Post")
+                    b.HasOne("FullStackAuth_WebAPI.Models.Post", "Post")
                         .WithMany()
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FullStackAuth_WebAPI.Models.User", "User")
                         .WithMany()
@@ -403,11 +426,13 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Favorites", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Favorite", b =>
                 {
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "Post")
+                    b.HasOne("FullStackAuth_WebAPI.Models.Post", "Post")
                         .WithMany()
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FullStackAuth_WebAPI.Models.User", "User")
                         .WithMany()
@@ -418,22 +443,22 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Followings", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Following", b =>
                 {
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "Follower")
+                    b.HasOne("FullStackAuth_WebAPI.Models.User", "UserIsFollower")
                         .WithMany()
-                        .HasForeignKey("FollowerId");
+                        .HasForeignKey("UserIsFollowerId");
 
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "Following")
+                    b.HasOne("FullStackAuth_WebAPI.Models.User", "UserIsFollowing")
                         .WithMany()
-                        .HasForeignKey("FollowingId");
+                        .HasForeignKey("UserIsFollowingId");
 
-                    b.Navigation("Follower");
+                    b.Navigation("UserIsFollower");
 
-                    b.Navigation("Following");
+                    b.Navigation("UserIsFollowing");
                 });
 
-            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Messages", b =>
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Message", b =>
                 {
                     b.HasOne("FullStackAuth_WebAPI.Models.User", "Receiver")
                         .WithMany()
@@ -453,6 +478,23 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.HasOne("FullStackAuth_WebAPI.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.SharedPost", b =>
+                {
+                    b.HasOne("FullStackAuth_WebAPI.Models.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FullStackAuth_WebAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Post");
 
                     b.Navigation("User");
                 });
