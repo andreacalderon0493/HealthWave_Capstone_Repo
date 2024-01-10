@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+
 namespace FullStackAuth_WebAPI.DataTransferObjects
 {
 	public class PostForDisplayDto

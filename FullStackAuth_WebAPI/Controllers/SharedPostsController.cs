@@ -28,9 +28,9 @@ namespace FullStackAuth_WebAPI.Controllers
 
         // POST api/sharedPosts/sharedPosts/{id}
         [HttpPost("sharedPosts/{postId}"), Authorize]
-        public IActionResult CommentPost([FromBody] SharedPost sharedPost, int postId)
+        public IActionResult CommentPost( int postId)
         {
-
+            SharedPost sharedPost = new SharedPost();
             try
             {
                 // Retrieve the authenticated user's ID from the JWT token
@@ -49,12 +49,12 @@ namespace FullStackAuth_WebAPI.Controllers
                 }
 
 
-                // Set the foreign key properties in the Comment model
+                // Set the foreign key properties in the Post model
                 sharedPost.PostId = postId;
                 sharedPost.UserId = userId;
 
 
-                // Add the new comment to the database
+                // Add the new Post to the database
                 _context.SharedPosts.Add(sharedPost);
                 _context.SaveChanges();
 

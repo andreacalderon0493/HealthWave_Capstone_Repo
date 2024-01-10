@@ -99,7 +99,7 @@ namespace FullStackAuth_WebAPI.Controllers
 
             _context.SaveChanges();
 
-            return NoContent();
+            return Ok(comment);
         }
 
         // DELETE api/Comments/comments/{id}

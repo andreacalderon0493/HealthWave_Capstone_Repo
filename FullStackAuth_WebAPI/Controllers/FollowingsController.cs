@@ -38,6 +38,7 @@ namespace FullStackAuth_WebAPI.Controllers
 
                 // Retrieve all followings that belong to the authenticated user, including the owner object
                 var following = _context.Followings.Where(f => f.FollowerId == userId)
+                       .Include(f => f.UserIsFollowing) 
                     .Select(f => new UserForDisplayDto()
                     {
                         Id = f.Id.ToString(),

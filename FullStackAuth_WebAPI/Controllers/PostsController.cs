@@ -38,24 +38,48 @@ namespace FullStackAuth_WebAPI.Controllers
 
                 // Retrieve all posts that belong to the authenticated user, including the owner object
                 var posts = _context.Posts.Where(p => p.UserId == userId)
-                    .Select(p => new PostForDisplayDto()
-                    {
-                        Id = p.Id.ToString(),
-                        Text = p.Text,
-                        User = new UserForDisplayDto()
-                        {
+                              .Include(p => p.User)
+                              .Select(p => new PostForDisplayDto()
+                            {
+                            Id = p.Id.ToString(),
+                            Text = p.Text,
+                            User = new UserForDisplayDto()
+                            {
                             Id = p.User.Id.ToString(),
                             UserName = p.User.UserName,
                             FirstName = p.User.FirstName,
                             LastName = p.User.LastName,
 
-                        }
+                            }
                         
-                    })
-                    .ToList();
+                            })
+                            .ToList();
 
-                // Return the list of followings as a 200 OK response
-                return StatusCode(200, posts);
+                var sharedPosts = _context.SharedPosts.Where(sp => sp.UserId == userId)
+                            .Include(sp => sp.User)
+                            .Select(sp => new SharedPostForDisplayDto()
+                                {
+                                 Id = sp.Id,
+                                Post = new PostForDisplayDto()
+                                {
+                                Id = sp.Post.Id.ToString(),
+                                Text = sp.Post.Text,
+                                User = new UserForDisplayDto()
+                                {
+                                 Id = sp.Post.User.Id.ToString(),
+                                 UserName = sp.Post.User.UserName,
+                                FirstName = sp.Post.User.FirstName,
+                                LastName = sp.Post.User.LastName,
+                                }
+                                }
+                                })
+                                .ToList();
+
+                // Combine the lists of posts and shared posts
+                var allPosts = posts.Cast<object>().Concat(sharedPosts.Cast<object>()).ToList();
+
+                // Return the list of posts and shared posts as a 200 OK response
+                return StatusCode(200, allPosts);
             }
             catch (Exception ex)
             {
