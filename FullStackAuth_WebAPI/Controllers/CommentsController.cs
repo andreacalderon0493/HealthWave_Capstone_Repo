@@ -70,15 +70,15 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        //DELETE api/followings/5
+        //DELETE api/comments/5
         [HttpDelete("{id}"), Authorize]
         public IActionResult Delete(int id)
         {
             try
             {
-                // Find the car to be deleted
-                var favorites = _context.Favorites.FirstOrDefault(f => f.Id == id);
-                if (favorites == null)
+                // Find the comment to be deleted
+                var comments = _context.Comments.FirstOrDefault(c => c.Id == id);
+                if (comments == null)
                 {
                     // Return a 404 Not Found error if the following with the specified ID does not exist
                     return NotFound();
@@ -86,14 +86,14 @@ namespace FullStackAuth_WebAPI.Controllers
 
                 // Check if the authenticated user is the owner of the following
                 var userId = User.FindFirstValue("id");
-                if (string.IsNullOrEmpty(userId) || favorites.UserId != userId)
+                if (string.IsNullOrEmpty(userId) || comments.UserId != userId)
                 {
                     // Return a 401 Unauthorized error if the authenticated user is not the owner of the car
                     return Unauthorized();
                 }
 
-                // Remove the favorite from the database
-                _context.Favorites.Remove(favorites);
+                // Remove the comment from the database
+                _context.Comments.Remove(comments);
                 _context.SaveChanges();
 
                 // Return a 204 No Content status code
