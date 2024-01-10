@@ -25,7 +25,7 @@ namespace FullStackAuth_WebAPI.Controllers
         }
 
 
-        // GET: api/followings/myFollowings
+        // GET: api/favorites/myfavorites
         [HttpGet("myFavorites"), Authorize]
         public IActionResult GetUsersFavorites()
         {
@@ -36,16 +36,24 @@ namespace FullStackAuth_WebAPI.Controllers
                 string userId = User.FindFirstValue("id");
 
 
-                // Retrieve all followings that belong to the authenticated user, including the owner object
-                var favorites = _context.Favorites.Where(f => f.UserId == userId)
-                    .Select(f => new UserForDisplayDto()
-                    {
-                        Id = f.Id.ToString(),
-                        UserName = f.User.UserName,
-                        FirstName = f.User.FirstName,
-                        LastName = f.User.LastName
-                    })
-                    .ToList();
+                // Retrieve all favorites that belong to the authenticated user, including the owner object
+                var favorites = _context.Favorites
+            .Where(f => f.UserId == userId)
+            .Select(f => new FavoritesForDisplayDto()
+            {
+                Id = f.Id.ToString(),
+                Post = f.Post,
+                User = new UserForDisplayDto()
+                {
+                    
+                    UserName = f.User.UserName,
+                    FirstName = f.User.FirstName,
+                    LastName = f.User.LastName,
+                }
+                
+                
+            })
+            .ToList();
 
                 // Return the list of followings as a 200 OK response
                 return StatusCode(200, favorites);
@@ -84,8 +92,8 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        // POST api/Favorite/{id}
-        [HttpPost("favorite/{postId}"), Authorize]
+        // POST api/Favorites/favorites/{id}
+        [HttpPost("favorites/{postId}"), Authorize]
         public IActionResult FavoritePost(int postId)
         {
             
