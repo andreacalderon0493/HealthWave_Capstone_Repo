@@ -69,42 +69,55 @@ namespace FullStackAuth_WebAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-        //DELETE api/comments/5
-        [HttpDelete("{id}"), Authorize]
-        public IActionResult Delete(int id)
+        // GET api/Comments/posts/{postId}/comments
+        [HttpGet("posts/{postId}/comments")]
+        public IActionResult GetCommentsForPost(int postId)
         {
-            try
+            var comments = _context.Comments.Where(c => c.PostId == postId).ToList();
+            if (comments == null)
             {
-                // Find the comment to be deleted
-                var comments = _context.Comments.FirstOrDefault(c => c.Id == id);
-                if (comments == null)
-                {
-                    // Return a 404 Not Found error if the following with the specified ID does not exist
-                    return NotFound();
-                }
-
-                // Check if the authenticated user is the owner of the following
-                var userId = User.FindFirstValue("id");
-                if (string.IsNullOrEmpty(userId) || comments.UserId != userId)
-                {
-                    // Return a 401 Unauthorized error if the authenticated user is not the owner of the car
-                    return Unauthorized();
-                }
-
-                // Remove the comment from the database
-                _context.Comments.Remove(comments);
-                _context.SaveChanges();
-
-                // Return a 204 No Content status code
-                return StatusCode(204);
+                return NotFound();
             }
-            catch (Exception ex)
-            {
-                // Return a 500 Internal Server Error with the error message if an exception occurs
-                return StatusCode(500, ex.Message);
-            }
+
+            return Ok(comments);
         }
+
+
+        // PUT api/Comments/comments/{id}
+        [HttpPut("comments/{id}")]
+        public IActionResult UpdateComment(int id, [FromBody] Comment updatedComment)
+        {
+            var comment = _context.Comments.Find(id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            // Update the comment
+            comment.Text = updatedComment.Text;
+            // Update any other fields as necessary...
+
+            _context.SaveChanges();
+
+            return NoContent();
+        }
+
+        // DELETE api/Comments/comments/{id}
+        [HttpDelete("comments/{id}")]
+        public IActionResult DeleteComment(int id)
+        {
+            var comment = _context.Comments.Find(id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            _context.Comments.Remove(comment);
+            _context.SaveChanges();
+
+            return NoContent();
+        }
+    
     }
 }
 
