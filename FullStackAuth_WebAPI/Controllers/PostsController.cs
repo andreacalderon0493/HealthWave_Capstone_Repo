@@ -24,6 +24,38 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
+        // GET: api/posts
+        [HttpGet]
+        public IActionResult GetAllPosts()
+        {
+            try
+            { 
+
+                //Retrieve all posts from the database, using Dtos
+                var posts = _context.Posts.Select(p => new PostForDisplayDto
+                {
+                    Id = p.Id.ToString(),
+                    Text = p.Text,
+                    User = new UserForDisplayDto
+                    {
+                        Id = p.User.Id,
+                        FirstName = p.User.FirstName,
+                        LastName = p.User.LastName,
+                        UserName = p.User.UserName,
+                    }
+                }).ToList();
+
+                // Return the list of cars as a 200 OK response
+                return StatusCode(200, posts);
+            }
+            catch (Exception ex)
+            {
+                // If an error occurs, return a 500 internal server error with the error message
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
 
         // GET: api/posts/myPosts
         [HttpGet("myPosts"), Authorize]
@@ -55,24 +87,67 @@ namespace FullStackAuth_WebAPI.Controllers
                             })
                             .ToList();
 
+                
+
+
+                // Return the list of posts  as a 200 OK response
+                return StatusCode(200, posts);
+            }
+            catch (Exception ex)
+            {
+                // If an error occurs, return a 500 internal server error with the error message
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        // GET: api/posts/myPosts
+        [HttpGet("myPosts"), Authorize]
+        public IActionResult GetUsersandSharedPosts()
+        {
+
+            try
+            {
+                // Retrieve the authenticated user's ID from the JWT token
+                string userId = User.FindFirstValue("id");
+
+
+                // Retrieve all posts that belong to the authenticated user, including the owner object
+                var posts = _context.Posts.Where(p => p.UserId == userId)
+                              .Include(p => p.User)
+                              .Select(p => new PostForDisplayDto()
+                              {
+                                  Id = p.Id.ToString(),
+                                  Text = p.Text,
+                                  User = new UserForDisplayDto()
+                                  {
+                                      Id = p.User.Id.ToString(),
+                                      UserName = p.User.UserName,
+                                      FirstName = p.User.FirstName,
+                                      LastName = p.User.LastName,
+
+                                  }
+
+                              })
+                            .ToList();
+
                 var sharedPosts = _context.SharedPosts.Where(sp => sp.UserId == userId)
                             .Include(sp => sp.User)
                             .Select(sp => new SharedPostForDisplayDto()
-                                {
-                                 Id = sp.Id,
+                            {
+                                Id = sp.Id,
                                 Post = new PostForDisplayDto()
                                 {
-                                Id = sp.Post.Id.ToString(),
-                                Text = sp.Post.Text,
-                                User = new UserForDisplayDto()
-                                {
-                                 Id = sp.Post.User.Id.ToString(),
-                                 UserName = sp.Post.User.UserName,
-                                FirstName = sp.Post.User.FirstName,
-                                LastName = sp.Post.User.LastName,
+                                    Id = sp.Post.Id.ToString(),
+                                    Text = sp.Post.Text,
+                                    User = new UserForDisplayDto()
+                                    {
+                                        Id = sp.Post.User.Id.ToString(),
+                                        UserName = sp.Post.User.UserName,
+                                        FirstName = sp.Post.User.FirstName,
+                                        LastName = sp.Post.User.LastName,
+                                    }
                                 }
-                                }
-                                })
+                            })
                                 .ToList();
 
                 // Combine the lists of posts and shared posts
