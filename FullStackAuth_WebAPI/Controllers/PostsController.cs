@@ -29,23 +29,32 @@ namespace FullStackAuth_WebAPI.Controllers
         public IActionResult GetAllPosts()
         {
             try
-            { 
-
-                //Retrieve all posts from the database, using Dtos
-                var posts = _context.Posts.Select(p => new PostForDisplayDto
-                {
-                    Id = p.Id.ToString(),
-                    Text = p.Text,
-                    User = new UserForDisplayDto
+            {
+                // Retrieve all posts from the database, using Dtos
+                var posts = _context.Posts
+                    .GroupJoin(_context.Likes,
+                              post => post.Id,
+                              like => like.PostId,
+                              (post, likes) => new
+                              {
+                                  Post = post,
+                                  Likes = likes
+                              })
+                    .Select(result => new PostForDisplayDto
                     {
-                        Id = p.User.Id,
-                        FirstName = p.User.FirstName,
-                        LastName = p.User.LastName,
-                        UserName = p.User.UserName,
-                    }
-                }).ToList();
+                        Id = result.Post.Id.ToString(),
+                        Text = result.Post.Text,
+                        User = new UserForDisplayDto
+                        {
+                            Id = result.Post.User.Id,
+                            FirstName = result.Post.User.FirstName,
+                            LastName = result.Post.User.LastName,
+                            UserName = result.Post.User.UserName,
+                        },
+                        Like = result.Likes.Count() // Count Likes
+                    }).ToList();
 
-                // Return the list of cars as a 200 OK response
+                // Return the list of posts as a 200 OK response
                 return StatusCode(200, posts);
             }
             catch (Exception ex)
@@ -70,25 +79,28 @@ namespace FullStackAuth_WebAPI.Controllers
 
                 // Retrieve all posts that belong to the authenticated user, including the owner object
                 var posts = _context.Posts.Where(p => p.UserId == userId)
-                              .Include(p => p.User)
-                              .Select(p => new PostForDisplayDto()
-                            {
-                            Id = p.Id.ToString(),
-                            Text = p.Text,
-                            User = new UserForDisplayDto()
-                            {
-                            Id = p.User.Id.ToString(),
-                            UserName = p.User.UserName,
-                            FirstName = p.User.FirstName,
-                            LastName = p.User.LastName,
-
-                            }
-                        
-                            })
-                            .ToList();
-
-                
-
+                            .GroupJoin(_context.Likes,
+                              post => post.Id,
+                              like => like.PostId,
+                              (post, likes) => new
+                              {
+                                  Post = post,
+                                  Likes = likes
+                              })
+                    .Select(result => new PostForDisplayDto
+                    {
+                        Id = result.Post.Id.ToString(),
+                        Text = result.Post.Text,
+                        User = new UserForDisplayDto
+                        {
+                            Id = result.Post.User.Id,
+                            FirstName = result.Post.User.FirstName,
+                            LastName = result.Post.User.LastName,
+                            UserName = result.Post.User.UserName,
+                        },
+                        Like = result.Likes.Count() // Count Likes
+                    }).ToList();
+             
 
                 // Return the list of posts  as a 200 OK response
                 return StatusCode(200, posts);
@@ -100,8 +112,8 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        // GET: api/posts/myPosts
-        [HttpGet("myPosts"), Authorize]
+        // GET: api/posts/AllPosts
+        [HttpGet("AllPosts"), Authorize]
         public IActionResult GetUsersandSharedPosts()
         {
 
@@ -171,7 +183,7 @@ namespace FullStackAuth_WebAPI.Controllers
             {
 
                 // Retrieve the following with the specified ID, including the owner object
-                var user = _context.Posts.FirstOrDefault(f => f.Id == id);
+                var user = _context.Posts.FirstOrDefault(p => p.Id == id);
                 //var following = _context.Followings.Include(f => f.FollowerId).FirstOrDefault(c => c.Id == id);
 
                 // If the following does not exist, return a 404 not found response

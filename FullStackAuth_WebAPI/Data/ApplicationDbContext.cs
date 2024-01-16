@@ -14,6 +14,9 @@ namespace FullStackAuth_WebAPI.Data
         public DbSet<Favorite> Favorites { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<SharedPost> SharedPosts { get; set; }
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Like> Likes { get; set; }
+
 
         public ApplicationDbContext(DbContextOptions options)
     : base(options)

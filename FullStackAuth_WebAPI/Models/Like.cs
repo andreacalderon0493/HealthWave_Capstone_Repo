@@ -4,22 +4,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FullStackAuth_WebAPI.Models
 {
-	public class Post
+	public class Like
 	{
         [Key]
         public int Id { get; set; }
-        public string Text { get; set; }
+
+        [ForeignKey("Post")]
+        public int PostId { get; set; }
+        public Post Post { get; set; }
 
         [ForeignKey("User")]
         public string UserId { get; set; }
         public User User { get; set; }
-
-        //[ForeignKey("Image")]
-        //public int? ImageId { get; set; }
-        //public Image Image { get; set; }
-  
     }
-    
-
 }
 

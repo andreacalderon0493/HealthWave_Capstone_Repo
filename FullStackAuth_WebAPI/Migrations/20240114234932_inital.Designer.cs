@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FullStackAuth_WebAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240109183931_initial")]
-    partial class initial
+    [Migration("20240114234932_inital")]
+    partial class inital
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -122,6 +122,41 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.HasIndex("UserIsFollowingId");
 
                     b.ToTable("Followings");
+                });
+
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Like", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("FullStackAuth_WebAPI.Models.Message", b =>
@@ -289,13 +324,13 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "64c6069c-da4b-4501-a26f-e779438ee1ad",
+                            Id = "0fbe8aa9-f3dc-4921-bba7-30aea2fd5fa2",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "1056946b-b397-42b2-9cb6-f7f0427d8920",
+                            Id = "cce00cbd-6a30-4f6b-a1d2-f0ebc9150254",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -459,6 +494,23 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.Navigation("UserIsFollower");
 
                     b.Navigation("UserIsFollowing");
+                });
+
+            modelBuilder.Entity("FullStackAuth_WebAPI.Models.Like", b =>
+                {
+                    b.HasOne("FullStackAuth_WebAPI.Models.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FullStackAuth_WebAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FullStackAuth_WebAPI.Models.Message", b =>

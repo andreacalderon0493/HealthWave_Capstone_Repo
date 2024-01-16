@@ -42,7 +42,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     .Select(f => new UserForDisplayDto()
                     {
                         Id = f.Id.ToString(),
-                        UserName = f.UserIsFollowing.UserName,
+                        UserName = f.UserIsFollowing.UserName.ToString(),
                         FirstName = f.UserIsFollowing.FirstName,
                         LastName = f.UserIsFollowing.LastName
                     })

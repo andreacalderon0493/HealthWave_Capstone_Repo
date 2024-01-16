@@ -141,7 +141,7 @@ namespace FullStackAuth_WebAPI.Controllers
             }
         }
 
-        //DELETE api/followings/5
+        //DELETE api/favorites/5
         [HttpDelete("{id}"), Authorize]
         public IActionResult Delete(int id)
         {

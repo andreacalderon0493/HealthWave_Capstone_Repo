@@ -24,10 +24,24 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
+        // GET api/Comments/posts/{postId}/comments
+        [HttpGet("posts/{postId}/comments")]
+        public IActionResult GetCommentsForPost(int postId)
+        {
+            var comments = _context.Comments
+                .Include(u => u.User)
+                .Where(c => c.PostId == postId).ToList();
+            if (comments == null)
+            {
+                return NotFound();
+            }
 
-    
+            return Ok(comments);
+        }
 
-     
+
+
+
 
         // POST api/Conments/comments/{id}
         [HttpPost("comments/{postId}"), Authorize]
@@ -69,18 +83,7 @@ namespace FullStackAuth_WebAPI.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-        // GET api/Comments/posts/{postId}/comments
-        [HttpGet("posts/{postId}/comments")]
-        public IActionResult GetCommentsForPost(int postId)
-        {
-            var comments = _context.Comments.Where(c => c.PostId == postId).ToList();
-            if (comments == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(comments);
-        }
+    
 
 
         // PUT api/Comments/comments/{id}
