@@ -28,23 +28,22 @@ namespace FullStackAuth_WebAPI.Controllers
         // GET: api/followings/myFollowings
         [HttpGet("myFollowings"), Authorize]
         public IActionResult GetUsersFollowings()
-        {
-          
+        { 
             try
             {
                 // Retrieve the authenticated user's ID from the JWT token
-                string userId = User.FindFirstValue("id");
+                string userId = User.FindFirstValue("id"); //id of logged in user
 
 
                 // Retrieve all followings that belong to the authenticated user, including the owner object
-                var following = _context.Followings.Where(f => f.FollowerId == userId)
-                       .Include(f => f.UserIsFollowing) 
+                var following = _context.Followings.Where(f => f.ReceivingFollowingId == userId)
+                       .Include(f => f.DoingFollowing)
                     .Select(f => new UserForDisplayDto()
                     {
                         Id = f.Id.ToString(),
-                        UserName = f.UserIsFollowing.UserName.ToString(),
-                        FirstName = f.UserIsFollowing.FirstName,
-                        LastName = f.UserIsFollowing.LastName
+                        UserName = f.DoingFollowing.UserName,
+                        FirstName = f.DoingFollowing.FirstName,
+                        LastName = f.DoingFollowing.LastName
                     })
                     .ToList();
 
@@ -89,7 +88,6 @@ namespace FullStackAuth_WebAPI.Controllers
         [HttpPost("{acceptingId}"), Authorize]
         public IActionResult Post(string acceptingId)
         {
-            Following request = new Following();
             try
             {
                 // Retrieve the authenticated user's ID from the JWT token
@@ -100,13 +98,16 @@ namespace FullStackAuth_WebAPI.Controllers
                 {
                     return Unauthorized();
                 }
-                request.Status = "Following";
-                request.FollowerId = userId;
-                request.FollowingId = acceptingId;
-                _context.Add(request);
+                var newFollow = new Following
+                {
+                    Status = "Following",
+                    DoingFollowingId = userId,
+                    ReceivingFollowingId = acceptingId
+                };
+                _context.Followings.Add(newFollow);
                 _context.SaveChanges();
                 
-                return StatusCode(201, request);
+                return StatusCode(201, newFollow);
             }
             catch (Exception ex)
             {
@@ -131,7 +132,7 @@ namespace FullStackAuth_WebAPI.Controllers
 
                 // Check if the authenticated user is the owner of the following
                 var userId = User.FindFirstValue("id");
-                if (string.IsNullOrEmpty(userId) || followings.FollowingId != userId)
+                if (string.IsNullOrEmpty(userId) || followings.DoingFollowingId != userId)
                 {
                     // Return a 401 Unauthorized error if the authenticated user is not the owner of the car
                     return Unauthorized();

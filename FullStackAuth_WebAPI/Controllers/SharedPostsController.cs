@@ -28,7 +28,7 @@ namespace FullStackAuth_WebAPI.Controllers
 
         // POST api/sharedPosts/sharedPosts/{id}
         [HttpPost("sharedPosts/{postId}"), Authorize]
-        public IActionResult CommentPost( int postId)
+        public IActionResult SharePost( int postId)
         {
             SharedPost sharedPost = new SharedPost();
             try

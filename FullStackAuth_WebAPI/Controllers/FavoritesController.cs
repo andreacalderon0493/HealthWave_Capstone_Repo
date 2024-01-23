@@ -38,7 +38,9 @@ namespace FullStackAuth_WebAPI.Controllers
 
                 // Retrieve all favorites that belong to the authenticated user, including the owner object
                 var favorites = _context.Favorites
+                    
             .Where(f => f.UserId == userId)
+            
             .Select(f => new FavoritesForDisplayDto()
             {
                 Id = f.Id.ToString(),

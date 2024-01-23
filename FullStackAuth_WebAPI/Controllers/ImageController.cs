@@ -33,6 +33,7 @@ namespace FullStackAuth_WebAPI.Controllers
             {
                 Id = x.Id,
                 Title = x.Title,
+                Description = x.Description,
                 
                 
                 ImageSrc = String.Format("{0}://{1}{2}/Images/{3}", Request.Scheme, Request.Host, Request.PathBase, x.Title)

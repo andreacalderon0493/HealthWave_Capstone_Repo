@@ -11,17 +11,14 @@ namespace FullStackAuth_WebAPI.Models
         public int Id { get; set; }
         public string Status { get; set; }
 
-        [ForeignKey("Follower")]
+        [ForeignKey("DoingFollowing")]
+        public string DoingFollowingId { get; set; }
+        public User DoingFollowing { get; set; }
 
-        public string FollowerId { get; set; }
-        public User UserIsFollower { get; set; }
-
-        [ForeignKey("Following")]
-
-        public string FollowingId { get; set; }
-        public User UserIsFollowing { get; set; }
-
-
+        [ForeignKey("ReceivingFollowing")]
+        public string ReceivingFollowingId { get; set; }
+        public User ReceivingFollowing { get; set; }
+        
     }
 }
 

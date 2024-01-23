@@ -66,7 +66,8 @@ namespace FullStackAuth_WebAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Title = table.Column<string>(type: "longtext", nullable: true)
+                    Title = table.Column<string>(type: "longtext", nullable: true),
+                    Description = table.Column<string>(type: "longtext", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -214,22 +215,20 @@ namespace FullStackAuth_WebAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Status = table.Column<string>(type: "longtext", nullable: true),
-                    FollowerId = table.Column<string>(type: "longtext", nullable: true),
-                    UserIsFollowerId = table.Column<string>(type: "varchar(255)", nullable: true),
-                    FollowingId = table.Column<string>(type: "longtext", nullable: true),
-                    UserIsFollowingId = table.Column<string>(type: "varchar(255)", nullable: true)
+                    DoingFollowingId = table.Column<string>(type: "varchar(255)", nullable: true),
+                    ReceivingFollowingId = table.Column<string>(type: "varchar(255)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Followings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Followings_AspNetUsers_UserIsFollowerId",
-                        column: x => x.UserIsFollowerId,
+                        name: "FK_Followings_AspNetUsers_DoingFollowingId",
+                        column: x => x.DoingFollowingId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Followings_AspNetUsers_UserIsFollowingId",
-                        column: x => x.UserIsFollowingId,
+                        name: "FK_Followings_AspNetUsers_ReceivingFollowingId",
+                        column: x => x.ReceivingFollowingId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                 })
@@ -269,6 +268,7 @@ namespace FullStackAuth_WebAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Text = table.Column<string>(type: "longtext", nullable: true),
+                    Title = table.Column<string>(type: "longtext", nullable: true),
                     UserId = table.Column<string>(type: "varchar(255)", nullable: true)
                 },
                 constraints: table =>
@@ -392,8 +392,8 @@ namespace FullStackAuth_WebAPI.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "0fbe8aa9-f3dc-4921-bba7-30aea2fd5fa2", null, "User", "USER" },
-                    { "cce00cbd-6a30-4f6b-a1d2-f0ebc9150254", null, "Admin", "ADMIN" }
+                    { "61ee5692-ec9f-4fa0-95a5-179b10f92994", null, "Admin", "ADMIN" },
+                    { "d3e91366-fdf1-4fc3-aad9-a8a4cd47f8c7", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -459,14 +459,14 @@ namespace FullStackAuth_WebAPI.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Followings_UserIsFollowerId",
+                name: "IX_Followings_DoingFollowingId",
                 table: "Followings",
-                column: "UserIsFollowerId");
+                column: "DoingFollowingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Followings_UserIsFollowingId",
+                name: "IX_Followings_ReceivingFollowingId",
                 table: "Followings",
-                column: "UserIsFollowingId");
+                column: "ReceivingFollowingId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Likes_PostId",

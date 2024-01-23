@@ -97,26 +97,20 @@ namespace FullStackAuth_WebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("FollowerId")
-                        .HasColumnType("longtext");
+                    b.Property<string>("DoingFollowingId")
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<string>("FollowingId")
-                        .HasColumnType("longtext");
+                    b.Property<string>("ReceivingFollowingId")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("UserIsFollowerId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("UserIsFollowingId")
-                        .HasColumnType("varchar(255)");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserIsFollowerId");
+                    b.HasIndex("DoingFollowingId");
 
-                    b.HasIndex("UserIsFollowingId");
+                    b.HasIndex("ReceivingFollowingId");
 
                     b.ToTable("Followings");
                 });
@@ -126,6 +120,9 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Title")
                         .HasColumnType("longtext");
@@ -190,6 +187,9 @@ namespace FullStackAuth_WebAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
@@ -321,13 +321,13 @@ namespace FullStackAuth_WebAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0fbe8aa9-f3dc-4921-bba7-30aea2fd5fa2",
+                            Id = "d3e91366-fdf1-4fc3-aad9-a8a4cd47f8c7",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "cce00cbd-6a30-4f6b-a1d2-f0ebc9150254",
+                            Id = "61ee5692-ec9f-4fa0-95a5-179b10f92994",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -480,17 +480,17 @@ namespace FullStackAuth_WebAPI.Migrations
 
             modelBuilder.Entity("FullStackAuth_WebAPI.Models.Following", b =>
                 {
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "UserIsFollower")
+                    b.HasOne("FullStackAuth_WebAPI.Models.User", "DoingFollowing")
                         .WithMany()
-                        .HasForeignKey("UserIsFollowerId");
+                        .HasForeignKey("DoingFollowingId");
 
-                    b.HasOne("FullStackAuth_WebAPI.Models.User", "UserIsFollowing")
+                    b.HasOne("FullStackAuth_WebAPI.Models.User", "ReceivingFollowing")
                         .WithMany()
-                        .HasForeignKey("UserIsFollowingId");
+                        .HasForeignKey("ReceivingFollowingId");
 
-                    b.Navigation("UserIsFollower");
+                    b.Navigation("DoingFollowing");
 
-                    b.Navigation("UserIsFollowing");
+                    b.Navigation("ReceivingFollowing");
                 });
 
             modelBuilder.Entity("FullStackAuth_WebAPI.Models.Like", b =>

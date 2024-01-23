@@ -24,6 +24,9 @@ namespace FullStackAuth_WebAPI.Controllers
             _context = context;
         }
 
+
+
+
         // GET: api/posts
         [HttpGet]
         public IActionResult GetAllPosts()
@@ -44,6 +47,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     {
                         Id = result.Post.Id.ToString(),
                         Text = result.Post.Text,
+                        Title = result.Post.Title,
                         User = new UserForDisplayDto
                         {
                             Id = result.Post.User.Id,
@@ -91,6 +95,7 @@ namespace FullStackAuth_WebAPI.Controllers
                     {
                         Id = result.Post.Id.ToString(),
                         Text = result.Post.Text,
+                        Title= result.Post.Title,
                         User = new UserForDisplayDto
                         {
                             Id = result.Post.User.Id,
@@ -100,7 +105,9 @@ namespace FullStackAuth_WebAPI.Controllers
                         },
                         Like = result.Likes.Count() // Count Likes
                     }).ToList();
-             
+
+                
+
 
                 // Return the list of posts  as a 200 OK response
                 return StatusCode(200, posts);
@@ -130,6 +137,7 @@ namespace FullStackAuth_WebAPI.Controllers
                               {
                                   Id = p.Id.ToString(),
                                   Text = p.Text,
+                                  Title= p.Title,
                                   User = new UserForDisplayDto()
                                   {
                                       Id = p.User.Id.ToString(),
@@ -151,6 +159,7 @@ namespace FullStackAuth_WebAPI.Controllers
                                 {
                                     Id = sp.Post.Id.ToString(),
                                     Text = sp.Post.Text,
+                                    Title= sp.Post.Title,
                                     User = new UserForDisplayDto()
                                     {
                                         Id = sp.Post.User.Id.ToString(),
@@ -162,11 +171,17 @@ namespace FullStackAuth_WebAPI.Controllers
                             })
                                 .ToList();
 
+                var allPostsForDisplay = new AllPostsForDisplayDto
+                {
+                    Posts = posts,
+                    SharedPosts = sharedPosts
+                };
+
                 // Combine the lists of posts and shared posts
-                var allPosts = posts.Cast<object>().Concat(sharedPosts.Cast<object>()).ToList();
+               
 
                 // Return the list of posts and shared posts as a 200 OK response
-                return StatusCode(200, allPosts);
+                return StatusCode(200, allPostsForDisplay);
             }
             catch (Exception ex)
             {
@@ -242,8 +257,8 @@ namespace FullStackAuth_WebAPI.Controllers
             try
             {
                 // Find the car to be deleted
-                var favorites = _context.Favorites.FirstOrDefault(f => f.Id == id);
-                if (favorites == null)
+                var post = _context.Posts.FirstOrDefault(f => f.Id == id);
+                if (post == null)
                 {
                     // Return a 404 Not Found error if the following with the specified ID does not exist
                     return NotFound();
@@ -251,14 +266,14 @@ namespace FullStackAuth_WebAPI.Controllers
 
                 // Check if the authenticated user is the owner of the following
                 var userId = User.FindFirstValue("id");
-                if (string.IsNullOrEmpty(userId) || favorites.UserId != userId)
+                if (string.IsNullOrEmpty(userId) || post.UserId != userId)
                 {
                     // Return a 401 Unauthorized error if the authenticated user is not the owner of the car
                     return Unauthorized();
                 }
 
                 // Remove the favorite from the database
-                _context.Favorites.Remove(favorites);
+                _context.Posts.Remove(post);
                 _context.SaveChanges();
 
                 // Return a 204 No Content status code
